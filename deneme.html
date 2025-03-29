@@ -5,21 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tarım Yönetim Sistemi</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        .container { width: 50%; margin: auto; padding: 20px; border: 1px solid #ddd; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        .navbar {
+            background-color: #4CAF50;
+            padding: 15px;
+            text-align: right;
+        }
+        .navbar button {
+            background-color: white;
+            color: #4CAF50;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .container { width: 50%; margin: 20px auto; padding: 20px; border: 1px solid #ddd; }
         input, button { display: block; margin: 10px 0; padding: 10px; width: 100%; }
         .hidden { display: none; }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="navbar">
+        <button onclick="showRegister()">Kayıt Ol</button>
+        <button onclick="showLogin()">Giriş Yap</button>
+    </div>
+
+    <div class="container hidden" id="registerContainer">
         <h2>Kayıt Ol</h2>
         <input type="text" placeholder="Kullanıcı Adı" id="regUsername">
         <input type="password" placeholder="Şifre" id="regPassword">
         <button onclick="register()">Kayıt Ol</button>
     </div>
 
-    <div class="container">
+    <div class="container hidden" id="loginContainer">
         <h2>Giriş Yap</h2>
         <input type="text" placeholder="Kullanıcı Adı" id="username">
         <input type="password" placeholder="Şifre" id="password">
@@ -42,6 +60,16 @@
     </div>
 
     <script>
+        function showRegister() {
+            document.getElementById('registerContainer').classList.remove('hidden');
+            document.getElementById('loginContainer').classList.add('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('loginContainer').classList.remove('hidden');
+            document.getElementById('registerContainer').classList.add('hidden');
+        }
+
         function register() {
             let regUsername = document.getElementById('regUsername').value;
             let regPassword = document.getElementById('regPassword').value;
