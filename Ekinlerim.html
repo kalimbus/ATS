@@ -8,12 +8,18 @@
         body { font-family: Arial, sans-serif; text-align: center; }
         .container { width: 80%; margin: auto; padding: 20px; }
         .ekin { border: 1px solid #ddd; padding: 10px; margin: 10px; }
+        input, button { display: block; margin: 10px auto; padding: 10px; width: 90%; }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Ekinlerim</h2>
         <button onclick="logout()">Çıkış Yap</button>
+        <h3>Ekin Ekle</h3>
+        <input type="text" id="ekinAdi" placeholder="Ekin Adı">
+        <input type="date" id="ekinTarihi">
+        <textarea id="ekinNotlari" placeholder="Sulama, gübreleme notları"></textarea>
+        <button onclick="ekinEkle()">Ekle</button>
         <div id="ekinListesi"></div>
     </div>
 
@@ -32,7 +38,46 @@
             window.location.href = 'index.html';
         }
         
+        function ekinEkle() {
+            let ekinAdi = document.getElementById('ekinAdi').value;
+            let ekinTarihi = document.getElementById('ekinTarihi').value;
+            let ekinNotlari = document.getElementById('ekinNotlari').value;
+            
+            if (!ekinAdi || !ekinTarihi) {
+                alert('Lütfen ekin adı ve tarih girin!');
+                return;
+            }
+            
+            let ekinler = JSON.parse(localStorage.getItem('ekinler')) || [];
+            ekinler.push({ ad: ekinAdi, tarih: ekinTarihi, notlar: ekinNotlari });
+            localStorage.setItem('ekinler', JSON.stringify(ekinler));
+            
+            ekinleriGoster();
+        }
+        
+        function ekinleriGoster() {
+            let ekinler = JSON.parse(localStorage.getItem('ekinler')) || [];
+            let ekinListesiDiv = document.getElementById('ekinListesi');
+            ekinListesiDiv.innerHTML = '';
+            
+            ekinler.forEach((ekin, index) => {
+                let ekinDiv = document.createElement('div');
+                ekinDiv.className = 'ekin';
+                ekinDiv.innerHTML = `<strong>${ekin.ad}</strong> - ${ekin.tarih}<br>${ekin.notlar}<br>
+                                     <button onclick="ekinSil(${index})">Sil</button>`;
+                ekinListesiDiv.appendChild(ekinDiv);
+            });
+        }
+        
+        function ekinSil(index) {
+            let ekinler = JSON.parse(localStorage.getItem('ekinler')) || [];
+            ekinler.splice(index, 1);
+            localStorage.setItem('ekinler', JSON.stringify(ekinler));
+            ekinleriGoster();
+        }
+        
         checkLogin();
+        ekinleriGoster();
     </script>
 </body>
 </html>
