@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { width: 300px; margin: auto; padding: 20px; border: 1px solid #ddd; margin-top: 50px; }
+        input, button { display: block; margin: 10px auto; padding: 10px; width: 90%; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Giriş Yap</h2>
+        <input type="email" placeholder="E-posta" id="loginEmail">
+        <input type="password" placeholder="Şifre" id="loginPassword">
+        <button onclick="login()">Giriş Yap</button>
+        <p>Hesabın yok mu? <a href="register.html">Kayıt Ol</a></p>
+    </div>
+
+    <script>
+        function login() {
+            let email = document.getElementById('loginEmail').value;
+            let password = document.getElementById('loginPassword').value;
+            
+            let storedPassword = localStorage.getItem(email);
+            
+            if (storedPassword && storedPassword === password) {
+                alert('Giriş başarılı!');
+                window.location.href = 'ekinlerim.html';
+            } else {
+                alert('E-posta veya şifre hatalı.');
+            }
+        }
+    </script>
+</body>
+</html>
