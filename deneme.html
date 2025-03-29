@@ -8,9 +8,17 @@
         body { font-family: Arial, sans-serif; }
         .container { width: 50%; margin: auto; padding: 20px; border: 1px solid #ddd; }
         input, button { display: block; margin: 10px 0; padding: 10px; width: 100%; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h2>Kayıt Ol</h2>
+        <input type="text" placeholder="Kullanıcı Adı" id="regUsername">
+        <input type="password" placeholder="Şifre" id="regPassword">
+        <button onclick="register()">Kayıt Ol</button>
+    </div>
+
     <div class="container">
         <h2>Giriş Yap</h2>
         <input type="text" placeholder="Kullanıcı Adı" id="username">
@@ -18,13 +26,13 @@
         <button onclick="login()">Giriş</button>
     </div>
 
-    <div class="container">
+    <div class="container hidden" id="content">
         <h2>Ekim Alanı Ekle</h2>
         <input type="text" placeholder="Alan Adı" id="fieldName">
         <button onclick="addField()">Ekle</button>
     </div>
 
-    <div class="container">
+    <div class="container hidden" id="cropContent">
         <h2>Ekine Sulama ve Gübreleme Bilgisi Ekle</h2>
         <input type="text" placeholder="Ekim Alanı" id="cropField">
         <input type="text" placeholder="Sulama Bilgisi" id="watering">
@@ -34,11 +42,35 @@
     </div>
 
     <script>
+        function register() {
+            let regUsername = document.getElementById('regUsername').value;
+            let regPassword = document.getElementById('regPassword').value;
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            if (users.some(user => user.username === regUsername)) {
+                alert('Bu kullanıcı adı zaten mevcut!');
+                return;
+            }
+            
+            users.push({ username: regUsername, password: regPassword });
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('Kayıt başarılı!');
+        }
+
         function login() {
             let username = document.getElementById('username').value;
             let password = document.getElementById('password').value;
-            localStorage.setItem('user', JSON.stringify({ username, password }));
-            alert('Giriş yapıldı');
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            let user = users.find(user => user.username === username && user.password === password);
+            if (user) {
+                localStorage.setItem('loggedInUser', username);
+                alert('Giriş başarılı!');
+                document.getElementById('content').classList.remove('hidden');
+                document.getElementById('cropContent').classList.remove('hidden');
+            } else {
+                alert('Hatalı kullanıcı adı veya şifre!');
+            }
         }
 
         function addField() {
@@ -58,6 +90,14 @@
             cropData.push({ cropField, watering, fertilizer, date });
             localStorage.setItem('cropData', JSON.stringify(cropData));
             alert('Veri kaydedildi');
+        }
+
+        window.onload = function() {
+            let loggedInUser = localStorage.getItem('loggedInUser');
+            if (loggedInUser) {
+                document.getElementById('content').classList.remove('hidden');
+                document.getElementById('cropContent').classList.remove('hidden');
+            }
         }
     </script>
 </body>
