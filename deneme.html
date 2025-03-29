@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarım Yönetim Sistemi</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 50%; margin: auto; padding: 20px; border: 1px solid #ddd; }
+        input, button { display: block; margin: 10px 0; padding: 10px; width: 100%; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Giriş Yap</h2>
+        <input type="text" placeholder="Kullanıcı Adı" id="username">
+        <input type="password" placeholder="Şifre" id="password">
+        <button onclick="login()">Giriş</button>
+    </div>
+
+    <div class="container">
+        <h2>Ekim Alanı Ekle</h2>
+        <input type="text" placeholder="Alan Adı" id="fieldName">
+        <button onclick="addField()">Ekle</button>
+    </div>
+
+    <div class="container">
+        <h2>Ekine Sulama ve Gübreleme Bilgisi Ekle</h2>
+        <input type="text" placeholder="Ekim Alanı" id="cropField">
+        <input type="text" placeholder="Sulama Bilgisi" id="watering">
+        <input type="text" placeholder="Gübreleme Bilgisi" id="fertilizer">
+        <input type="date" id="date">
+        <button onclick="addCropData()">Kaydet</button>
+    </div>
+
+    <script>
+        function login() {
+            let username = document.getElementById('username').value;
+            let password = document.getElementById('password').value;
+            localStorage.setItem('user', JSON.stringify({ username, password }));
+            alert('Giriş yapıldı');
+        }
+
+        function addField() {
+            let fieldName = document.getElementById('fieldName').value;
+            let fields = JSON.parse(localStorage.getItem('fields')) || [];
+            fields.push(fieldName);
+            localStorage.setItem('fields', JSON.stringify(fields));
+            alert('Alan eklendi');
+        }
+
+        function addCropData() {
+            let cropField = document.getElementById('cropField').value;
+            let watering = document.getElementById('watering').value;
+            let fertilizer = document.getElementById('fertilizer').value;
+            let date = document.getElementById('date').value;
+            let cropData = JSON.parse(localStorage.getItem('cropData')) || [];
+            cropData.push({ cropField, watering, fertilizer, date });
+            localStorage.setItem('cropData', JSON.stringify(cropData));
+            alert('Veri kaydedildi');
+        }
+    </script>
+</body>
+</html>
