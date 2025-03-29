@@ -3,61 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tarım Yönetim Sistemi</title>
+    <title>Akıllı Tarım Sistemi</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        .container { width: 50%; margin: auto; padding: 20px; border: 1px solid #ddd; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        .navbar {
+            background-color: #4CAF50;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h1 {
+            color: white;
+            margin: 0;
+            padding-left: 15px;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            padding-right: 15px;
+        }
+        .nav-buttons button {
+            background-color: white;
+            color: #4CAF50;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .container { width: 50%; margin: 20px auto; padding: 20px; border: 1px solid #ddd; }
         input, button { display: block; margin: 10px 0; padding: 10px; width: 100%; }
+        .hidden { display: none; }
+        #weather { margin: 20px; padding: 10px; border: 1px solid #ddd; }
+        h2 { font-size: 28px; margin-bottom: 10px; }
+        p { font-size: 18px; line-height: 1.6; }
+        ul { font-size: 18px; line-height: 1.6; }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="navbar">
+        <h1>ATS (Akıllı Tarım Sistemi)</h1>
+        <div class="nav-buttons">
+            <button onclick="showRegister()">Kayıt Ol</button>
+            <button onclick="showLogin()">Giriş Yap</button>
+        </div>
+    </div>
+
+    <div class="container hidden" id="registerContainer">
+        <h2>Kayıt Ol</h2>
+        <input type="email" placeholder="E-posta" id="regEmail">
+        <input type="password" placeholder="Şifre" id="regPassword">
+        <button onclick="register()">Kayıt Ol</button>
+    </div>
+
+    <div class="container hidden" id="loginContainer">
         <h2>Giriş Yap</h2>
-        <input type="text" placeholder="Kullanıcı Adı" id="username">
+        <input type="email" placeholder="E-posta" id="email">
         <input type="password" placeholder="Şifre" id="password">
         <button onclick="login()">Giriş</button>
     </div>
 
-    <div class="container">
-        <h2>Ekim Alanı Ekle</h2>
-        <input type="text" placeholder="Alan Adı" id="fieldName">
-        <button onclick="addField()">Ekle</button>
+    <div class="container hidden" id="farmsContainer">
+        <h2>Ekinlerim</h2>
+        <p>Burada ekili alanlarınız listelenecek.</p>
     </div>
 
-    <div class="container">
-        <h2>Ekine Sulama ve Gübreleme Bilgisi Ekle</h2>
-        <input type="text" placeholder="Ekim Alanı" id="cropField">
-        <input type="text" placeholder="Sulama Bilgisi" id="watering">
-        <input type="text" placeholder="Gübreleme Bilgisi" id="fertilizer">
-        <input type="date" id="date">
-        <button onclick="addCropData()">Kaydet</button>
+    <div class="container" id="aboutContainer">
+        <h2>Biz Kimiz?</h2>
+        <p>ATS, tarımın geleceğini şekillendirmeyi hedefleyen iki lise öğrencisi tarafından kurulan bir girişimdir. Tarıma olan ilgimiz ve sürdürülebilir üretimin önemine duyduğumuz inançla yola çıktık. Teknoloji ile tarımı birleştirerek üreticilere ve tüketicilere daha güvenli, verimli ve şeffaf bir sistem sunmayı amaçlıyoruz. Tarımın sadece çiftçilerin değil, hepimizin ortak geleceği olduğuna inanıyor ve bu alanda fark yaratmak için çalışıyoruz.</p>
+
+        <h2>Hedeflerimiz</h2>
+        <ul>
+            <li>Üretici ile tüketici arasında güven bağının sağlanması ve doğrudan iletişimin artırılması.</li>
+            <li>Çiftçilerin ekinlerine daha rahat ve bilinçli bir şekilde bakabilmesi için modern çözümler sunmak.</li>
+            <li>Tarımsal üretimde verimliliği artırarak hem çiftçilerin kazancını hem de tüketicilerin kaliteli ürüne erişimini kolaylaştırmak.</li>
+            <li>Dijitalleşme ile tarımda bilgi paylaşımını artırarak çiftçilerin daha bilinçli kararlar almasını sağlamak.</li>
+        </ul>
+
+        <h2>Tarımda Gerçekler</h2>
+        <p>Türkiye, verimli toprakları ve uygun iklimiyle tarımsal üretimde büyük bir potansiyele sahiptir. Ancak son yıllarda tarım sektörü birçok zorlukla karşı karşıya kalmıştır. Küçük ölçekli çiftçilerin üretim maliyetleri artarken, ithalat politikaları yerli üretimi zor duruma sokmaktadır. Bunun yanı sıra, iklim değişikliği ve su kaynaklarının azalması gibi çevresel faktörler de tarımsal verimliliği etkilemektedir.</p>
+
+        <p>Çiftçilerin en büyük sorunlarından biri de pazarlama sürecinde karşılaştıkları belirsizliklerdir. Üreticiler, ürünlerini aracılar nedeniyle düşük fiyatlarla satmak zorunda kalırken, tüketiciler ise yüksek fiyatlarla karşılaşmaktadır. Bu noktada, doğrudan üretici-tüketici ilişkisini güçlendiren sistemler devreye girmelidir.</p>
+
+        <p>Bilinçli tarım politikaları ve dijital çözümlerle bu sorunların üstesinden gelmek mümkündür. ATS olarak, üreticilerin desteklenmesi ve tüketicilerin güvenilir gıdaya ulaşmasını sağlamak için çalışıyoruz. Tarımın geleceği, bugünden atılacak doğru adımlarla şekillenecektir.</p>
+    </div>
+
+    <div id="weather" class="hidden">
+        <h2>Hava Durumu (İstanbul)</h2>
+        <div id="weather-data">
+            <p><strong>1. Gün:</strong> Parçalı Bulutlu, Sıcaklık: 18°C, Rüzgar: 3 m/s, Nem: 60%</p>
+            <p><strong>2. Gün:</strong> Güneşli, Sıcaklık: 20°C, Rüzgar: 2 m/s, Nem: 55%</p>
+            <p><strong>3. Gün:</strong> Hafif Yağmurlu, Sıcaklık: 17°C, Rüzgar: 4 m/s, Nem: 70%</p>
+            <p><strong>4. Gün:</strong> Kapalı, Sıcaklık: 16°C, Rüzgar: 5 m/s, Nem: 75%</p>
+            <p><strong>5. Gün:</strong> Güneşli, Sıcaklık: 22°C, Rüzgar: 3 m/s, Nem: 50%</p>
+            <p><strong>6. Gün:</strong> Yağmurlu, Sıcaklık: 15°C, Rüzgar: 6 m/s, Nem: 80%</p>
+            <p><strong>7. Gün:</strong> Açık, Sıcaklık: 21°C, Rüzgar: 2 m/s, Nem: 45%</p>
+        </div>
     </div>
 
     <script>
+        function showRegister() {
+            document.getElementById('registerContainer').classList.remove('hidden');
+            document.getElementById('loginContainer').classList.add('hidden');
+        }
+        
+        function showLogin() {
+            document.getElementById('loginContainer').classList.remove('hidden');
+            document.getElementById('registerContainer').classList.add('hidden');
+        }
+
+        function register() {
+            let email = document.getElementById('regEmail').value;
+            let password = document.getElementById('regPassword').value;
+            
+            if (!email || !password) {
+                alert("Lütfen tüm alanları doldurun.");
+                return;
+            }
+            
+            if (!email.endsWith("@gmail.com")) {
+                alert("Lütfen geçerli bir @gmail.com adresi girin.");
+                return;
+            }
+            
+            if (localStorage.getItem(email)) {
+                alert("Bu e-posta kullanımda.");
+                return;
+            }
+            
+            localStorage.setItem(email, password);
+            alert('Kayıt başarılı! Giriş yapabilirsiniz.');
+            showLogin();
+        }
+
         function login() {
-            let username = document.getElementById('username').value;
+            let email = document.getElementById('email').value;
             let password = document.getElementById('password').value;
-            localStorage.setItem('user', JSON.stringify({ username, password }));
-            alert('Giriş yapıldı');
-        }
-
-        function addField() {
-            let fieldName = document.getElementById('fieldName').value;
-            let fields = JSON.parse(localStorage.getItem('fields')) || [];
-            fields.push(fieldName);
-            localStorage.setItem('fields', JSON.stringify(fields));
-            alert('Alan eklendi');
-        }
-
-        function addCropData() {
-            let cropField = document.getElementById('cropField').value;
-            let watering = document.getElementById('watering').value;
-            let fertilizer = document.getElementById('fertilizer').value;
-            let date = document.getElementById('date').value;
-            let cropData = JSON.parse(localStorage.getItem('cropData')) || [];
-            cropData.push({ cropField, watering, fertilizer, date });
-            localStorage.setItem('cropData', JSON.stringify(cropData));
-            alert('Veri kaydedildi');
+            let storedPassword = localStorage.getItem(email);
+            
+            if (!email || !password) {
+                alert("Lütfen tüm alanları doldurun.");
+                return;
+            }
+            
+            if (storedPassword === password) {
+                alert('Giriş başarılı!');
+                document.getElementById('loginContainer').classList.add('hidden');
+                document.getElementById('farmsContainer').classList.remove('hidden');
+                document.getElementById('weather').classList.remove('hidden'); // Show weather after login
+            } else {
+                alert('Hatalı e-posta veya şifre.');
+            }
         }
     </script>
 </body>
