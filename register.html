@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { width: 300px; margin: auto; padding: 20px; border: 1px solid #ddd; margin-top: 50px; }
+        input, button { display: block; margin: 10px auto; padding: 10px; width: 90%; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Kayıt Ol</h2>
+        <input type="email" placeholder="E-posta" id="regEmail">
+        <input type="password" placeholder="Şifre" id="regPassword">
+        <button onclick="register()">Kayıt Ol</button>
+        <p>Zaten hesabın var mı? <a href="login.html">Giriş Yap</a></p>
+    </div>
+
+    <script>
+        function register() {
+            let email = document.getElementById('regEmail').value;
+            let password = document.getElementById('regPassword').value;
+            
+            if (!email.endsWith("@gmail.com")) {
+                alert("Lütfen geçerli bir @gmail.com adresi girin.");
+                return;
+            }
+            
+            if (localStorage.getItem(email)) {
+                alert("E-posta kullanımda.");
+                return;
+            }
+            
+            if (email && password) {
+                localStorage.setItem(email, password);
+                alert('Kayıt başarılı! Giriş yapabilirsiniz.');
+                window.location.href = 'login.html';
+            } else {
+                alert('Lütfen e-posta ve şifre girin.');
+            }
+        }
+    </script>
+</body>
+</html>
