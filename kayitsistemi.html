@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akıllı Tarım Sistemi</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; text-align: center; }
+        .navbar {
+            background-color: #4CAF50;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar h1 {
+            color: white;
+            margin: 0;
+            padding-left: 15px;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            padding-right: 15px;
+        }
+        .nav-buttons button {
+            background-color: white;
+            color: #4CAF50;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .container { width: 80%; margin: auto; padding: 20px; }
+        input, button { display: block; margin: 10px auto; padding: 10px; width: 90%; }
+        .hidden { display: none; }
+        .ekin { border: 1px solid #ddd; padding: 10px; margin: 10px; }
+        #weather { margin: 20px; padding: 10px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>ATS (Akıllı Tarım Sistemi)</h1>
+        <div class="nav-buttons">
+            <button onclick="showRegister()">Kayıt Ol</button>
+            <button onclick="showLogin()">Giriş Yap</button>
+        </div>
+    </div>
+
+    <div class="container hidden" id="registerContainer">
+        <h2>Kayıt Ol</h2>
+        <input type="email" placeholder="E-posta" id="regEmail">
+        <input type="password" placeholder="Şifre" id="regPassword">
+        <button onclick="register()">Kayıt Ol</button>
+    </div>
+
+    <div class="container hidden" id="loginContainer">
+        <h2>Giriş Yap</h2>
+        <input type="email" placeholder="E-posta" id="email">
+        <input type="password" placeholder="Şifre" id="password">
+        <button onclick="login()">Giriş</button>
+    </div>
+
+    <div class="container hidden" id="farmsContainer">
+        <h2>Ekinlerim</h2>
+        <button onclick="logout()">Çıkış Yap</button>
+        <h3>Ekin Ekle</h3>
+        <input type="text" id="ekinAdi" placeholder="Ekin Adı">
+        <input type="date" id="ekinTarihi">
+        <textarea id="ekinNotlari" placeholder="Sulama, gübreleme notları"></textarea>
+        <button onclick="ekinEkle()">Ekle</button>
+        <div id="ekinListesi"></div>
+    </div>
+
+    <div id="weather" class="hidden">
+        <h2>Hava Durumu</h2>
+        <p>Hava durumu verileri burada gösterilecek.</p>
+    </div>
+
+    <script>
+        function showRegister() {
+            document.getElementById('registerContainer').classList.remove('hidden');
+            document.getElementById('loginContainer').classList.add('hidden');
+        }
+        
+        function showLogin() {
+            document.getElementById('loginContainer').classList.remove('hidden');
+            document.getElementById('registerContainer').classList.add('hidden');
+        }
+
+        function register() {
+            let email = document.getElementById('regEmail').value;
+            let password = document.getElementById('regPassword').value;
+            
+            if (!email || !password) {
+                alert("Lütfen tüm alanları doldurun.");
+                return;
+            }
+            
+            if (!email.endsWith("@gmail.com")) {
+                alert("Lütfen geçerli bir @gmail.com adresi girin.");
+                return;
+            }
+            
+            if (localStorage.getItem(email)) {
+                alert("Bu e-posta kullanımda.");
+                return;
+            }
+            
+            localStorage.setItem(email, password);
+            alert('Kayıt başarılı! Giriş yapabilirsiniz.');
+            showLogin();
+        }
+
+        function login() {
+            let email = document.getElementById('email').value;
+            let password = document.getElementById('password').value;
+            let storedPassword = localStorage.getItem(email);
+            
+            if (!email || !password) {
+                alert("Lütfen tüm alanları doldurun.");
+                return;
+            }
+            
+            if (storedPassword === password) {
+                alert('Giriş başarılı!');
+                localStorage.setItem('loggedInUser', email);
+                document.getElementById('loginContainer').classList.add('hidden');
+                document.getElementById('farmsContainer').classList.remove('hidden');
+                document.getElementById('weather').classList.remove('hidden');
+                ekinleriGoster();
+            } else {
+                alert('Hatalı e-posta veya şifre.');
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('loggedInUser');
+            alert('Çıkış yapıldı.');
+            location.reload();
+        }
+        
+        function ekinEkle() {
+            let ekinAdi = document.getElementById('ekinAdi').value;
+            let ekinTarihi = document.getElementById('ekinTarihi').value;
+            let ekinNotlari = document.getElementById('ekinNotlari').value;
+            
+            if (!ekinAdi || !ekinTarihi) {
+                alert('Lütfen ekin adı ve tarih girin!');
+                return;
+            }
+            
+            let ekinler = JSON.parse(localStorage.getItem('ekinler')) || [];
+            ekinler.push({ ad: ekinAdi, tarih: ekinTarihi, notlar: ekinNotlari });
+            localStorage.setItem('ekinler', JSON.stringify(ekinler));
+            ekinleriGoster();
+        }
+        
+        function ekinleriGoster() {
+            let ekinler = JSON.parse(localStorage.getItem('ekinler')) || [];
+            let ekinListesiDiv = document.getElementById('ekinListesi');
+            ekinListesiDiv.innerHTML = '';
+            
+            ekinler.forEach((ekin, index) => {
+                let ekinDiv = document.createElement('div');
+                ekinDiv.className = 'ekin';
+                ekinDiv.innerHTML = `<strong>${ekin.ad}</strong> - ${ekin.tarih}<br>${ekin.notlar}<br>
+                                     <button onclick="ekinSil(${index})">Sil</button>`;
+                ekinListesiDiv.appendChild(ekinDiv);
+            });
+        }
+    </script>
+</body>
+</html>
