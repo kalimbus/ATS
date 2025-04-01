@@ -180,120 +180,154 @@ window.onpopstate = function(event) {
     document.getElementById('infoContainer').classList.remove('hidden');
 };
 
-// İl ve ilçeler listesi
-const cities = {
-    "İstanbul": ["Kadıköy", "Beşiktaş", "Üsküdar"],
-    "Ankara": ["Çankaya", "Keçiören", "Mamak"],
-    "İzmir": ["Konak", "Bornova", "Karşıyaka"]
+window.onpopstate = function(event) {
+    document.getElementById('registerContainer').classList.add('hidden');
+    document.getElementById('loginContainer').classList.add('hidden');
+    document.getElementById('farmsContainer').classList.add('hidden');
+    document.getElementById('infoContainer').classList.remove('hidden');
 };
 
-// Ekin ekleme, silme ve düzenleme fonksiyonları
+// İl ve ilçe verisi
+const cities = {
+    "İstanbul": ["Kadıköy", "Beşiktaş", "Üsküdar", "Bakırköy"],
+    "Ankara": ["Çankaya", "Keçiören", "Mamak", "Altındağ"],
+    "İzmir": ["Konak", "Karşıyaka", "Bornova", "Buca"],
+    "Bursa": ["Osmangazi", "Yıldırım", "Nilüfer", "Gürsu"]
+};
+
+const cropVarieties = {
+    "Domates": ["Çeri Domates", "Salkım Domates", "Pembe Domates"],
+    "Biber": ["Yeşil Biber", "Kırmızı Biber", "Dolmalık Biber"],
+    "Patlıcan": ["Uzun Patlıcan", "Topan Patlıcan"]
+};
+
 document.addEventListener("DOMContentLoaded", function() {
     let farmsContainer = document.getElementById('farmsContainer');
-    if (farmsContainer) {
-        let addCropButton = document.createElement("button");
-        addCropButton.textContent = "Ekin Ekle";
-        addCropButton.onclick = function() {
-            let cropSelect = document.createElement("select");
-            cropSelect.style.width = "200px";
-            let crops = ["Domates", "Biber", "Patlıcan"];
-            crops.forEach(crop => {
+    let cropList = document.createElement("ul");
+    cropList.id = "cropList";
+    farmsContainer.appendChild(cropList);
+    
+    let addCropButton = document.createElement("button");
+    addCropButton.textContent = "Ekin Ekle";
+    addCropButton.onclick = function() {
+        let formContainer = document.createElement("div");
+        
+        let cropSelect = document.createElement("select");
+        cropSelect.style.width = "150px";
+        let crops = Object.keys(cropVarieties);
+        crops.forEach(crop => {
+            let option = document.createElement("option");
+            option.value = crop;
+            option.textContent = crop;
+            cropSelect.appendChild(option);
+        });
+
+        let varietySelect = document.createElement("select");
+        varietySelect.style.width = "150px";
+        varietySelect.innerHTML = "<option>Tür Seç</option>";
+
+        cropSelect.onchange = function() {
+            let selectedCrop = cropSelect.value;
+            varietySelect.innerHTML = "";
+            cropVarieties[selectedCrop].forEach(variety => {
                 let option = document.createElement("option");
-                option.value = crop;
-                option.textContent = crop;
-                cropSelect.appendChild(option);
+                option.value = variety;
+                option.textContent = variety;
+                varietySelect.appendChild(option);
             });
-
-            let dateInput = document.createElement("input");
-            dateInput.type = "date";
-            dateInput.placeholder = "Ekim Tarihi";
-            
-            let citySelect = document.createElement("select");
-            citySelect.style.width = "150px";
-            let defaultCityOption = document.createElement("option");
-            defaultCityOption.textContent = "İl Seçiniz";
-            citySelect.appendChild(defaultCityOption);
-            Object.keys(cities).forEach(city => {
-                let option = document.createElement("option");
-                option.value = city;
-                option.textContent = city;
-                citySelect.appendChild(option);
-            });
-
-            let districtSelect = document.createElement("select");
-            districtSelect.style.width = "150px";
-            let defaultDistrictOption = document.createElement("option");
-            defaultDistrictOption.textContent = "İlçe Seçiniz";
-            districtSelect.appendChild(defaultDistrictOption);
-            
-            citySelect.onchange = function() {
-                districtSelect.innerHTML = "";
-                let selectedCity = citySelect.value;
-                if (cities[selectedCity]) {
-                    cities[selectedCity].forEach(district => {
-                        let option = document.createElement("option");
-                        option.value = district;
-                        option.textContent = district;
-                        districtSelect.appendChild(option);
-                    });
-                }
-            };
-            
-            let areaInput = document.createElement("input");
-            areaInput.type = "number";
-            areaInput.placeholder = "Alan (m²)";
-
-            let confirmButton = document.createElement("button");
-            confirmButton.textContent = "Ekle";
-            confirmButton.onclick = function() {
-                let selectedCrop = cropSelect.value;
-                let cropList = document.getElementById("cropList");
-                if (!cropList) {
-                    cropList = document.createElement("ul");
-                    cropList.id = "cropList";
-                    farmsContainer.appendChild(cropList);
-                }
-                let cropItem = document.createElement("li");
-                cropItem.textContent = `${selectedCrop} - ${dateInput.value} - ${citySelect.value}/${districtSelect.value} - ${areaInput.value}m²`;
-                
-                let editButton = document.createElement("button");
-                editButton.textContent = "Düzenle";
-                editButton.onclick = function() {
-                    let newCropType = prompt("Yeni ekin türünü girin: Domates, Biber, Patlıcan", cropSelect.value);
-                    if (newCropType && crops.includes(newCropType)) {
-                        cropItem.textContent = `${newCropType} - ${dateInput.value} - ${citySelect.value}/${districtSelect.value} - ${areaInput.value}m²`;
-                        cropItem.appendChild(editButton);
-                        cropItem.appendChild(deleteButton);
-                    }
-                };
-                
-                let deleteButton = document.createElement("button");
-                deleteButton.textContent = "Sil";
-                deleteButton.onclick = function() {
-                    cropList.removeChild(cropItem);
-                };
-                
-                cropItem.appendChild(editButton);
-                cropItem.appendChild(deleteButton);
-                cropList.appendChild(cropItem);
-                farmsContainer.removeChild(cropSelect);
-                farmsContainer.removeChild(dateInput);
-                farmsContainer.removeChild(citySelect);
-                farmsContainer.removeChild(districtSelect);
-                farmsContainer.removeChild(areaInput);
-                farmsContainer.removeChild(confirmButton);
-            };
-
-            farmsContainer.appendChild(cropSelect);
-            farmsContainer.appendChild(dateInput);
-            farmsContainer.appendChild(citySelect);
-            farmsContainer.appendChild(districtSelect);
-            farmsContainer.appendChild(areaInput);
-            farmsContainer.appendChild(confirmButton);
         };
-        farmsContainer.appendChild(addCropButton);
+
+        let dateInput = document.createElement("input");
+        dateInput.type = "date";
+        dateInput.placeholder = "Ekim Tarihi";
+
+        let citySelect = document.createElement("select");
+        let districtSelect = document.createElement("select");
+        citySelect.innerHTML = "<option>İl Seç</option>";
+        districtSelect.innerHTML = "<option>İlçe Seç</option>";
+        
+        for (let city in cities) {
+            let option = document.createElement("option");
+            option.value = city;
+            option.textContent = city;
+            citySelect.appendChild(option);
+        }
+        citySelect.onchange = function() {
+            let selectedCity = citySelect.value;
+            districtSelect.innerHTML = "<option>İlçe Seç</option>";
+            cities[selectedCity].forEach(district => {
+                let option = document.createElement("option");
+                option.value = district;
+                option.textContent = district;
+                districtSelect.appendChild(option);
+            });
+        };
+
+        let areaInput = document.createElement("input");
+        areaInput.type = "number";
+        areaInput.placeholder = "Alan (m²)";
+
+        let confirmButton = document.createElement("button");
+        confirmButton.textContent = "Ekle";
+        confirmButton.onclick = function() {
+            let selectedCrop = cropSelect.value;
+            let selectedVariety = varietySelect.value;
+            let cropItem = document.createElement("li");
+            cropItem.textContent = `${selectedCrop} (${selectedVariety}) - ${dateInput.value} - ${citySelect.value}/${districtSelect.value} - ${areaInput.value}m²`;
+            
+            let editButton = document.createElement("button");
+            editButton.textContent = "Düzenle";
+            editButton.onclick = function() {
+                cropSelect.value = selectedCrop;
+                varietySelect.value = selectedVariety;
+            };
+            
+            let deleteButton = document.createElement("button");
+            deleteButton.textContent = "Sil";
+            deleteButton.onclick = function() {
+                if (confirm("Bu ekini silmek istediğinizden emin misiniz?")) {
+                    cropList.removeChild(cropItem);
+                }
+            };
+            
+            cropItem.appendChild(editButton);
+            cropItem.appendChild(deleteButton);
+            cropList.appendChild(cropItem);
+            
+            alert("Ürün eklendi!");
+            farmsContainer.removeChild(formContainer);
+        };
+        
+        let closeButton = document.createElement("button");
+        closeButton.textContent = "Kapat";
+        closeButton.onclick = function() {
+            farmsContainer.removeChild(formContainer);
+        };
+        
+        formContainer.appendChild(cropSelect);
+        formContainer.appendChild(varietySelect);
+        formContainer.appendChild(dateInput);
+        formContainer.appendChild(citySelect);
+        formContainer.appendChild(districtSelect);
+        formContainer.appendChild(areaInput);
+        formContainer.appendChild(confirmButton);
+        formContainer.appendChild(closeButton);
+        farmsContainer.appendChild(formContainer);
+    };
+    farmsContainer.appendChild(addCropButton);
+
+    // Kullanıcı girişi sonrası değişiklikler
+    function updateUIAfterLogin(username) {
+        let authContainer = document.getElementById('authContainer');
+        authContainer.innerHTML = `<span>Merhaba, ${username}</span> <button onclick="logout()">Çıkış Yap</button>`;
+    }
+    
+    function logout() {
+        let authContainer = document.getElementById('authContainer');
+        authContainer.innerHTML = '<button onclick="showLogin()">Giriş Yap</button> <button onclick="showRegister()">Kayıt Ol</button>';
     }
 });
+
     </script>
 </body>
 </html>
