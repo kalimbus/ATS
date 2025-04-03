@@ -172,6 +172,27 @@ function showLogin() {
     history.pushState({ page: "login" }, "", "#login");
 }
 
+function updateUIAfterLogin(username) {
+    if (!username) return;
+    
+    currentUser = username; // Kullanıcıyı güncelle
+    localStorage.setItem('currentUser', username);
+
+    let authContainer = document.getElementById('authContainer');
+    if (authContainer) {
+        authContainer.innerHTML = `<span>Merhaba, ${username}</span> 
+            <button onclick="logout()">Çıkış Yap</button>`;
+    }
+
+    document.getElementById('loginContainer').classList.add('hidden');
+    document.getElementById('registerContainer').classList.add('hidden');
+    document.getElementById('infoContainer').classList.remove('hidden');
+    document.getElementById('farmsContainer').classList.remove('hidden');
+
+    loadUserCrops();
+}
+
+
 // Tarayıcının geri butonuna basıldığında ana sayfayı göster
 window.onpopstate = function(event) {
     document.getElementById('registerContainer').classList.add('hidden');
@@ -186,6 +207,8 @@ window.onpopstate = function(event) {
     document.getElementById('farmsContainer').classList.add('hidden');
     document.getElementById('infoContainer').classList.remove('hidden');
 };
+let currentUser = localStorage.getItem('currentUser') || null;
+let userCrops = JSON.parse(localStorage.getItem('userCrops')) || {}; // Kullanıcı bazlı ekinler
 
 // İl ve ilçe verisi
 const cities = {
@@ -202,6 +225,13 @@ const cropVarieties = {
 };
 
 document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function() {
+    let storedUser = localStorage.getItem('currentUser');
+    if (storedUser) {
+        updateUIAfterLogin(storedUser);
+    }
+});
+
     let farmsContainer = document.getElementById('farmsContainer');
     let cropList = document.createElement("ul");
     cropList.id = "cropList";
@@ -210,7 +240,10 @@ document.addEventListener("DOMContentLoaded", function() {
     let addCropButton = document.createElement("button");
     addCropButton.textContent = "Ekin Ekle";
     addCropButton.onclick = function() {
-        let formContainer = document.createElement("div");
+        if (!currentUser) {
+            alert("Önce giriş yapmalısınız!");
+            return;
+        }
         
         let cropSelect = document.createElement("select");
         cropSelect.style.width = "150px";
@@ -294,39 +327,53 @@ document.addEventListener("DOMContentLoaded", function() {
             cropItem.appendChild(deleteButton);
             cropList.appendChild(cropItem);
             
-            alert("Ürün eklendi!");
-            farmsContainer.removeChild(formContainer);
+            if (!userCrops[currentUser]) userCrops[currentUser] = [];
+            userCrops[currentUser].push(cropItem.textContent);
+            localStorage.setItem('userCrops', JSON.stringify(userCrops));
+            alert("Ürün başarıyla eklendi!");
         };
-        
-        let closeButton = document.createElement("button");
-        closeButton.textContent = "Kapat";
-        closeButton.onclick = function() {
-            farmsContainer.removeChild(formContainer);
-        };
-        
-        formContainer.appendChild(cropSelect);
-        formContainer.appendChild(varietySelect);
-        formContainer.appendChild(dateInput);
-        formContainer.appendChild(citySelect);
-        formContainer.appendChild(districtSelect);
-        formContainer.appendChild(areaInput);
-        formContainer.appendChild(confirmButton);
-        formContainer.appendChild(closeButton);
-        farmsContainer.appendChild(formContainer);
+
+        farmsContainer.appendChild(cropSelect);
+        farmsContainer.appendChild(varietySelect);
+        farmsContainer.appendChild(dateInput);
+        farmsContainer.appendChild(citySelect);
+        farmsContainer.appendChild(districtSelect);
+        farmsContainer.appendChild(areaInput);
+        farmsContainer.appendChild(confirmButton);
     };
     farmsContainer.appendChild(addCropButton);
-
-    // Kullanıcı girişi sonrası değişiklikler
-    function updateUIAfterLogin(username) {
-        let authContainer = document.getElementById('authContainer');
-        authContainer.innerHTML = `<span>Merhaba, ${username}</span> <button onclick="logout()">Çıkış Yap</button>`;
-    }
-    
-    function logout() {
-        let authContainer = document.getElementById('authContainer');
-        authContainer.innerHTML = '<button onclick="showLogin()">Giriş Yap</button> <button onclick="showRegister()">Kayıt Ol</button>';
-    }
+    updateUIAfterLogin(currentUser);
 });
+
+function updateUIAfterLogin(username) {
+    if (!username) return;
+    currentUser = username;
+    localStorage.setItem('currentUser', username);
+    let authContainer = document.getElementById('authContainer');
+    authContainer.innerHTML = `<span>Merhaba, ${username}</span> <button onclick="logout()">Çıkış Yap</button>`;
+    loadUserCrops();
+}
+
+function logout() {
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    let authContainer = document.getElementById('authContainer');
+    authContainer.innerHTML = '<button onclick="showLogin()">Giriş Yap</button> <button onclick="showRegister()">Kayıt Ol</button>';
+    document.getElementById('cropList').innerHTML = "";
+}
+
+function loadUserCrops() {
+    let cropList = document.getElementById('cropList');
+    cropList.innerHTML = "";
+    if (userCrops[currentUser]) {
+        userCrops[currentUser].forEach(crop => {
+            let cropItem = document.createElement("li");
+            cropItem.textContent = crop;
+            cropList.appendChild(cropItem);
+        });
+    }
+}
+
 
     </script>
 </body>
